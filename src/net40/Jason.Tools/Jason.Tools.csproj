@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{96AD09D4-647B-4438-B30E-BB028FAAD813}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jason</RootNamespace>
+    <AssemblyName>Jason.Tools</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Radical, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Radical.1.4.2.0-RC\lib\net40\Radical.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\shared\JasonAssemblyInfo.cs">
+      <Link>Properties\JasonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\DefaultCommandExecutionRetryPolicy.cs" />
+    <Compile Include="Configuration\DelegateCommandExecutionRetryPolicy.cs" />
+    <Compile Include="Configuration\InternalJasonContainer.cs" />
+    <Compile Include="Configuration\DefaultJasonServerConfiguration.cs" />
+    <Compile Include="Configuration\IJasonContainer.cs" />
+    <Compile Include="Configuration\IJasonDependencyResolver.cs" />
+    <Compile Include="Configuration\IJasonServerConfiguration.cs" />
+    <Compile Include="Configuration\IJasonServerEndpoint.cs" />
+    <Compile Include="Configuration\ICommandExecutionRetryPolicy.cs" />
+    <Compile Include="Defaults.cs" />
+    <Compile Include="Factories\IInterceptorProvider.cs" />
+    <Compile Include="Factories\IValidatorsProvider.cs" />
+    <Compile Include="Handlers\Commands\AbstractCommandHandler.cs" />
+    <Compile Include="Factories\ICommandHandlerProvider.cs" />
+    <Compile Include="Factories\IJobHandlersProvider.cs" />
+    <Compile Include="Factories\IJobTaskHandlersProvider.cs" />
+    <Compile Include="Handlers\ISecurityViolationHandler.cs" />
+    <Compile Include="Handlers\___ICommandValidationInterceptor.cs" />
+    <Compile Include="Handlers\ICommandInterceptor.cs" />
+    <Compile Include="Handlers\ICommandSecurityInterceptor.cs" />
+    <Compile Include="Handlers\Jobs\AbstractJobWorker.cs" />
+    <Compile Include="Handlers\Commands\ICommandHandler %28Generic%29.cs" />
+    <Compile Include="Handlers\Commands\ICommandHandler.cs" />
+    <Compile Include="Handlers\Jobs\DefaultJobRunner.cs" />
+    <Compile Include="Handlers\Jobs\DefaultJobWorker.cs" />
+    <Compile Include="Handlers\Jobs\IJobRunner %28Generic%29.cs" />
+    <Compile Include="Handlers\Jobs\IJobRunner.cs" />
+    <Compile Include="Handlers\Jobs\IJobWorker %28Generic%29.cs" />
+    <Compile Include="Handlers\Jobs\IJobWorker.cs" />
+    <Compile Include="Handlers\Tasks\AbstractJobTaskRunner.cs" />
+    <Compile Include="Handlers\Tasks\AbstractJobTaskWorker.cs" />
+    <Compile Include="Handlers\Tasks\EchoJobTaskWorker.cs" />
+    <Compile Include="Handlers\Tasks\IJobTaskRunner %28Generic%29.cs" />
+    <Compile Include="Handlers\Tasks\IJobTaskRunner.cs" />
+    <Compile Include="Handlers\Tasks\IJobTaskWorker %28Generic%29.cs" />
+    <Compile Include="Handlers\Tasks\IJobTaskWorker.cs" />
+    <Compile Include="IJasonService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Runtime\DefaultJasonService.cs" />
+    <Compile Include="Runtime\DefaultValidatorsProvider.cs" />
+    <Compile Include="Runtime\DefaultCommandHandleProvider.cs" />
+    <Compile Include="Runtime\DefaultInterceptorProvider.cs" />
+    <Compile Include="Runtime\DefaultJobHandlersProvider.cs" />
+    <Compile Include="Runtime\DefaultJobTaskHandlersProvider.cs" />
+    <Compile Include="Runtime\EmptyCommandInterceptor.cs" />
+    <Compile Include="Runtime\EmptyCommandSecurityInterceptor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jason\Jason.csproj">
+      <Project>{69e446bd-13bb-47ac-a4c2-17e244a70d75}</Project>
+      <Name>Jason</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40" md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40"
+
+copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40\$(TargetName).*" /B /Y</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
