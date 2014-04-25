@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E100493A-DED1-4BC0-AE7A-185E823F3880}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jason</RootNamespace>
+    <AssemblyName>Jason</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="Radical, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Radical.1.4.2.0-RC\lib\sl50\Radical.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core">
+      <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\shared\JasonAssemblyInfo.cs">
+      <Link>Properties\JasonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\ComponentModel\IAsyncWorkerService.cs">
+      <Link>ComponentModel\IAsyncWorkerService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\ComponentModel\ServiceKnownTypesProvider.cs">
+      <Link>ComponentModel\ServiceKnownTypesProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Configuration\ServiceKnownTypeAttribute.cs">
+      <Link>Configuration\ServiceKnownTypeAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\AbstractDataObject.cs">
+      <Link>Model\AbstractDataObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\Command.cs">
+      <Link>Model\Command.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\CommandExecutionResult.cs">
+      <Link>Model\CommandExecutionResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\EchoJobTask.cs">
+      <Link>Model\EchoJobTask.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\EchoJobTaskResult.cs">
+      <Link>Model\EchoJobTaskResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\EmptyCommandExecutionResult.cs">
+      <Link>Model\EmptyCommandExecutionResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\EmptyJobTaskResult.cs">
+      <Link>Model\EmptyJobTaskResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\Job.cs">
+      <Link>Model\Job.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\JobExecutionResult.cs">
+      <Link>Model\JobExecutionResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\JobTask.cs">
+      <Link>Model\JobTask.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Model\JobTaskResult.cs">
+      <Link>Model\JobTaskResult.cs</Link>
+    </Compile>
+    <Compile Include="..\..\net40\Jason\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\sl50" md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\sl50"
+
+copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\sl50\$(TargetName).*" /B /Y</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

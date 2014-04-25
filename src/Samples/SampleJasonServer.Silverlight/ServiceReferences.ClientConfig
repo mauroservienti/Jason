@@ -1,0 +1,12 @@
+﻿<configuration>
+
+	<system.serviceModel>
+		<client>
+			<endpoint address="http://localhost:36315/jason.svc"
+					  binding="basicHttpBinding" bindingConfiguration=""
+					  contract="Jason.ComponentModel.IWorkerService"
+					  name="" />
+		</client>
+	</system.serviceModel>
+	
+</configuration>

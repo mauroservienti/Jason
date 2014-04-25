@@ -1,0 +1,4 @@
+﻿<%@ ServiceHost Language="C#" 
+                Debug="true" 
+                Service="Jason.Server.WcfServices.WorkerService, Jason.Server"
+                Factory="SampleJasonServer.Web.Hosting.JasonServiceFactory, SampleJasonServer.Web" %>
