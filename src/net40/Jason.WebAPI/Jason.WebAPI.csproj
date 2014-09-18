@@ -103,7 +103,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40" md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40"
 
