@@ -79,6 +79,7 @@
     <Compile Include="ComponentModel\IWebApiCommandDispatcher.cs" />
     <Compile Include="ComponentModel\IWebApiJobDispatcher.cs" />
     <Compile Include="Filters\ApiCorrelationIdActionFilter.cs" />
+    <Compile Include="Filters\InterceptCommandActionFilter.cs" />
     <Compile Include="JasonController.cs" />
     <Compile Include="JasonWebAPIEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

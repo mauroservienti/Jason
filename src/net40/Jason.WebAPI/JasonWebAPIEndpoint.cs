@@ -23,12 +23,15 @@ namespace Jason.WebAPI
 			this.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
 			this.DefaultSuccessfulHttpResponseCode = HttpStatusCode.OK;
 			this.OnExecutingAction = ( cid, request ) => { };
+			this.OnCommandActionIntercepted = cmd => { };
 			this.CorrelationIdHeaderName = "x-jason-correlation-id";
 		}
 
 		public TypeNameHandling TypeNameHandling { get; set; }
 		public HttpStatusCode DefaultSuccessfulHttpResponseCode { get; set; }
 		public Action<ExecutingActionArgs, HttpRequestMessage> OnExecutingAction { get; set; }
+
+		public Action<Object> OnCommandActionIntercepted { get; set; }
 
 		public String CorrelationIdHeaderName { get; set; }
 
@@ -52,6 +55,12 @@ namespace Jason.WebAPI
 					this.OnExecutingAction( cid, request );
 				};
 
+				GlobalConfiguration.Configuration.Filters.Add( filter );
+			}
+
+			if ( !GlobalConfiguration.Configuration.Filters.OfType<InterceptCommandActionFilter>().Any() )
+			{
+				var filter = new InterceptCommandActionFilter( configuration );
 				GlobalConfiguration.Configuration.Filters.Add( filter );
 			}
 		}
