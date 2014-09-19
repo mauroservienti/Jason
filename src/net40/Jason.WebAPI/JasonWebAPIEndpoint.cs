@@ -47,20 +47,19 @@ namespace Jason.WebAPI
 				.SerializerSettings
 				.TypeNameHandling = this.TypeNameHandling;
 
-			if ( !GlobalConfiguration.Configuration.Filters.OfType<ApiCorrelationIdActionFilter>().Any() )
+			if ( !GlobalConfiguration.Configuration.Filters.OfType<JasonWebApiActionFilter>().Any() )
 			{
-				var filter = new ApiCorrelationIdActionFilter(this.CorrelationIdHeaderName);
+				var filter = new JasonWebApiActionFilter(this.CorrelationIdHeaderName);
 				filter.OnExecutingAction = ( cid, request ) =>
 				{
 					this.OnExecutingAction( cid, request );
 				};
+				filter.DefaultSuccessfulHttpResponseCode = this.DefaultSuccessfulHttpResponseCode;
+				filter.OnCommandActionIntercepted = cmd => 
+				{
+					this.OnCommandActionIntercepted( cmd );
+				};
 
-				GlobalConfiguration.Configuration.Filters.Add( filter );
-			}
-
-			if ( !GlobalConfiguration.Configuration.Filters.OfType<InterceptCommandActionFilter>().Any() )
-			{
-				var filter = new InterceptCommandActionFilter( configuration );
 				GlobalConfiguration.Configuration.Filters.Add( filter );
 			}
 		}

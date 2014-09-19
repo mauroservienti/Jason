@@ -78,8 +78,8 @@
     <Compile Include="Commands\EchoCommand.cs" />
     <Compile Include="ComponentModel\IWebApiCommandDispatcher.cs" />
     <Compile Include="ComponentModel\IWebApiJobDispatcher.cs" />
-    <Compile Include="Filters\ApiCorrelationIdActionFilter.cs" />
-    <Compile Include="Filters\InterceptCommandActionFilter.cs" />
+    <Compile Include="Filters\JasonWebApiActionFilter.cs" />
+    <Compile Include="Filters\InterceptCommandActionAttribute.cs" />
     <Compile Include="JasonController.cs" />
     <Compile Include="JasonWebAPIEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

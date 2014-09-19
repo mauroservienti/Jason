@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,16 +19,21 @@ namespace Jason.WebAPI.Filters
 		public Boolean AppendCorrelationIdToResponse { get; set; }
 	}
 
-	public class ApiCorrelationIdActionFilter : IActionFilter
+	public class JasonWebApiActionFilter : IActionFilter
 	{
 		public Action<ExecutingActionArgs, HttpRequestMessage> OnExecutingAction { get; set; }
 
+		public Action<Object> OnCommandActionIntercepted { get; set; }
+
+		public HttpStatusCode DefaultSuccessfulHttpResponseCode { get; set; }
+		
 		readonly String correlationIdHeader;
 
-		public ApiCorrelationIdActionFilter( String correlationIdHeader )
+		public JasonWebApiActionFilter( String correlationIdHeader )
 		{
 			this.correlationIdHeader = correlationIdHeader;
 			this.OnExecutingAction = ( cid, request ) => { };
+			this.OnCommandActionIntercepted = cmd => { };
 		}
 
 		public Task<HttpResponseMessage> ExecuteActionFilterAsync( HttpActionContext actionContext, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> continuation )
@@ -46,17 +52,39 @@ namespace Jason.WebAPI.Filters
 
 			this.OnExecutingAction( args, actionContext.Request );
 
-			return continuation()
-				.ContinueWith( t =>
-				{
-					if (!t.IsFaulted && args.AppendCorrelationIdToResponse && !String.IsNullOrWhiteSpace( args.CorrelationId ) )
+			var shouldIntercept = actionContext.ActionDescriptor.GetCustomAttributes<InterceptCommandActionAttribute>().SingleOrDefault();
+			if ( shouldIntercept == null )
+			{
+				return continuation()
+					.ContinueWith( t =>
 					{
-						t.Result.Headers.Add( this.correlationIdHeader, args.CorrelationId );
-					}
+						if ( !t.IsFaulted && args.AppendCorrelationIdToResponse && !String.IsNullOrWhiteSpace( args.CorrelationId ) )
+						{
+							t.Result.Headers.Add( this.correlationIdHeader, args.CorrelationId );
+						}
 
-					return t;
-				} )
-				.Unwrap();
+						return t;
+					} )
+					.Unwrap();
+			}
+
+			return Task.Factory.StartNew( () =>
+			{
+				var command = actionContext.ActionArguments.Values.OfType<Object>().Single();
+				var code = this.DefaultSuccessfulHttpResponseCode;
+				if ( shouldIntercept.ResponseCode.HasValue )
+				{
+					code = shouldIntercept.ResponseCode.Value;
+				}
+
+				this.OnCommandActionIntercepted( command );
+
+				var response = new HttpResponseMessage( code );
+
+				return response;
+			} );
+
+			
 		}
 
 		public bool AllowMultiple
