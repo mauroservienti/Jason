@@ -73,9 +73,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40" md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40"
+    <PostBuildEvent>if exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\net40". (
+    del "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\net40\*.*"  /Q
+    echo "Build/NuGet folder purged".
+) else (
+    echo "no Build/NuGet folder to purge.".
+)
 
-copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\net40\$(TargetName).*" /B /Y</PostBuildEvent>
+if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\net40". (
+    md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\net40"
+    echo "Build/NuGet folder created.".
+)
+
+copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\net40\$(TargetName).*" /B /Y
+del "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\net40\$(TargetFileName).config"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
