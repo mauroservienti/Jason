@@ -17,6 +17,10 @@ namespace Jason.WebAPI.Filters
 		public Boolean RequestContainsCorrelationId { get; internal set; }
 
 		public Boolean AppendCorrelationIdToResponse { get; set; }
+
+		public bool IsJasonExecute { get; internal set; }
+
+		public Boolean IsCommandInterceptor { get; internal set; }
 	}
 
 	public class JasonWebApiActionFilter : IActionFilter
@@ -41,7 +45,13 @@ namespace Jason.WebAPI.Filters
 			Ensure.That( actionContext ).Named( () => actionContext ).IsNotNull();
 			Ensure.That( continuation ).Named( () => continuation ).IsNotNull();
 
+			var shouldIntercept = actionContext.ActionDescriptor.GetCustomAttributes<InterceptCommandActionAttribute>().SingleOrDefault();
+			var isJasonExecute = actionContext.Request.Method == HttpMethod.Post
+				&& actionContext.Request.RequestUri.ToString().IndexOf( "api/jason", StringComparison.OrdinalIgnoreCase ) != -1;
+
 			var args = new ExecutingActionArgs();
+			args.IsJasonExecute = isJasonExecute;
+			args.IsCommandInterceptor = shouldIntercept != null;
 
 			if ( actionContext.Request.Headers.Contains( this.correlationIdHeader ) )
 			{
@@ -52,7 +62,6 @@ namespace Jason.WebAPI.Filters
 
 			this.OnExecutingAction( args, actionContext.Request );
 
-			var shouldIntercept = actionContext.ActionDescriptor.GetCustomAttributes<InterceptCommandActionAttribute>().SingleOrDefault();
 			if ( shouldIntercept == null )
 			{
 				return continuation()
