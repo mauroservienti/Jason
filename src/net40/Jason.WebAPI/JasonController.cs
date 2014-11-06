@@ -48,14 +48,6 @@ namespace Jason.WebAPI
 			return temp;
 		}
 
-		[HttpPost]
-		public HttpResponseMessage Execute( Object command ) 
-		{
-			logger.Debug( "JasonController/Execute" );
-
-			return this.Post( command );
-		}
-
 		public HttpResponseMessage Post( Object command )
 		{
 			try
