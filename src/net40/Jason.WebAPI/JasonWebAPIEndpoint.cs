@@ -18,12 +18,16 @@ namespace Jason.WebAPI
 {
 	public class JasonWebAPIEndpoint : IJasonServerEndpoint
 	{
+		CommandMapper mapper = new CommandMapper();
+
 		public JasonWebAPIEndpoint()
 		{
 			this.DefaultSuccessfulHttpResponseCode = HttpStatusCode.OK;
 			this.OnExecutingAction = ( cid, request ) => { };
 			//this.OnCommandActionIntercepted = (request,cmd) => { };
 			this.CorrelationIdHeaderName = "x-jason-correlation-id";
+			this.IsCommandConvention = t => false;
+			this.FindCommandType = (request, lastSegment) => mapper.GetMappedType( lastSegment );
 		}
 
 		public TypeNameHandling? TypeNameHandling { get; set; }
@@ -31,6 +35,10 @@ namespace Jason.WebAPI
 		public Action<ExecutingActionArgs, HttpRequestMessage> OnExecutingAction { get; set; }
 
 		public Func<HttpRequestMessage, Object, Func<HttpRequestMessage, Object, HttpResponseMessage>, HttpResponseMessage> OnCommandActionIntercepted { get; set; }
+
+		public Func<Type, Boolean> IsCommandConvention { get; set; }
+
+		public Func<HttpRequestMessage, String, Type> FindCommandType { get; set; }
 
 		public String CorrelationIdHeaderName { get; set; }
 
@@ -40,6 +48,12 @@ namespace Jason.WebAPI
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiRequestExecutor ) }, typeof( WebApiRequestExecutor ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiCommandDispatcher ) }, typeof( WebApiCommandDispatcher ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiJobDispatcher ) }, typeof( WebApiJobDispatcher ) );
+
+			var allCommands = types.Where( this.IsCommandConvention );
+			foreach( var cmdType in allCommands )
+			{
+				this.mapper.CreateMapping( cmdType );
+			}
 
 			if( this.TypeNameHandling.HasValue )
 			{

@@ -1,6 +1,8 @@
 ﻿using Jason.ComponentModel;
 using Jason.Configuration;
 using Jason.WebAPI.ComponentModel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,6 +30,13 @@ namespace Jason.WebAPI.Runtime
 
 		public HttpResponseMessage Handle( HttpRequestMessage request, Object command ) 
 		{
+			if( command is JObject ) 
+			{
+				var last = request.RequestUri.Segments.Last();
+				var type = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().FindCommandType( request, last );
+				command = ( ( JObject )command ).ToObject( type );
+			}
+
 			Object result = null;
 
 			if( command is IJob )

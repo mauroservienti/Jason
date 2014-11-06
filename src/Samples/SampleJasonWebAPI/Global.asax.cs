@@ -51,7 +51,11 @@ namespace SampleJasonWebAPI
 
 			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint()
 			{
-				TypeNameHandling = TypeNameHandling.Objects
+				TypeNameHandling = TypeNameHandling.Objects,
+				IsCommandConvention = t =>
+				{
+					return t.Namespace != null && t.Namespace == "SampleTasks";
+				}
 			} );
 
 			jasonConfig.AddEndpoint( new Jason.Client.JasonInProcessEndpoint() );
@@ -62,7 +66,7 @@ namespace SampleJasonWebAPI
 			{
 				OnGetService = t =>
 				{
-					if ( windsor.Kernel.HasComponent( t ) )
+					if( windsor.Kernel.HasComponent( t ) )
 					{
 						return windsor.Resolve( t );
 					}
@@ -71,7 +75,7 @@ namespace SampleJasonWebAPI
 				},
 				OnGetServices = t =>
 				{
-					if ( windsor.Kernel.HasComponent( t ) )
+					if( windsor.Kernel.HasComponent( t ) )
 					{
 						return windsor.ResolveAll( t ).OfType<Object>();
 					}
@@ -93,7 +97,7 @@ namespace SampleJasonWebAPI
 
 		public object GetService( Type serviceType )
 		{
-			if ( this.container.Kernel.HasComponent( serviceType ) )
+			if( this.container.Kernel.HasComponent( serviceType ) )
 			{
 				return this.container.Resolve( serviceType );
 			}
