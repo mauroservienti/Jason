@@ -163,7 +163,7 @@
   <ItemGroup>
     <Reference Include="Radical, Version=0.2.1.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Radical.1.4.2.0-RC\lib\netcore45\Radical.dll</HintPath>
+      <HintPath>..\..\..\packages\Radical.1.5.0.0-alfa\lib\netcore45\Radical.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
@@ -171,11 +171,21 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\netcore45" md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\netcore45"
+    <PostBuildEvent>if exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\netcore45". (
+    del "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\netcore45\*.*"  /Q
+    echo "Build/NuGet folder purged".
+) else (
+    echo "no Build/NuGet folder to purge.".
+)
 
-copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\netcore45\$(TargetName).*" /B /Y</PostBuildEvent>
+if not exist "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\netcore45". (
+    md "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\netcore45"
+    echo "Build/NuGet folder created.".
+)
+
+copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\netcore45\$(TargetName).*" /B /Y
+del "$(SolutionDir)build\$(ConfigurationName)\$(ProjectName)\lib\netcore45\$(TargetFileName).config"</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

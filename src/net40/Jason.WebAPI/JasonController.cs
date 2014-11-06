@@ -24,16 +24,12 @@ namespace Jason.WebAPI
 	{
 		static readonly TraceSource logger = new TraceSource( "Jason" );
 
-		readonly IJasonServerConfiguration configuration;
-		readonly IWebApiCommandDispatcher commandDispatcher;
-		readonly IWebApiJobDispatcher jobDispatcher;
+		readonly IWebApiRequestExecutor executor;
 
-		public JasonController(IJasonServerConfiguration configuration, IWebApiCommandDispatcher commandDispatcher, IWebApiJobDispatcher jobDispatcher )
+		public JasonController( IWebApiRequestExecutor executor )
 		{
-			this.configuration = configuration;
-			this.commandDispatcher = commandDispatcher;
-			this.jobDispatcher = jobDispatcher;
-
+			this.executor = executor;
+			
 			logger.Debug( "JasonController.ctor" );
 		}
 
@@ -63,35 +59,39 @@ namespace Jason.WebAPI
 					.LogErrorsTo( logger )
 					.IsNotNull();
 
-				Object result = null;
+				var result = this.executor.Handle( this.Request, command );
 
-				if ( command is IJob )
-				{
-					result = this.jobDispatcher.DispatchJob( this.Request, ( IJob )command );
-				}
-				else
-				{
-					result = this.commandDispatcher.DispatchCommand( this.Request, command );
-				}
+				return result;
 
-				if ( result is HttpResponseMessage )
-				{
-					logger.Debug( "result is HttpResponseMessage, returning as is." );
-					return ( HttpResponseMessage )result;
-				}
-				else if ( result == null || result == Jason.Defaults.Response.Ok )
-				{
-					var defaultCode = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().DefaultSuccessfulHttpResponseCode;
+				//Object result = null;
 
-					logger.Debug( "result is '{0}', returning HTTP-Code: {1}.", result == null ? "<null>" : "Ok", defaultCode );
-					return Request.CreateResponse( defaultCode );
-				}
-				else
-				{
-					var defaultCode = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().DefaultSuccessfulHttpResponseCode;
-					logger.Debug( "result is custom type, returning wrapped in {0}.", defaultCode );
-					return Request.CreateResponse( defaultCode, result );
-				}
+				//if ( command is IJob )
+				//{
+				//	result = this.jobDispatcher.DispatchJob( this.Request, ( IJob )command );
+				//}
+				//else
+				//{
+				//	result = this.commandDispatcher.DispatchCommand( this.Request, command );
+				//}
+
+				//if ( result is HttpResponseMessage )
+				//{
+				//	logger.Debug( "result is HttpResponseMessage, returning as is." );
+				//	return ( HttpResponseMessage )result;
+				//}
+				//else if ( result == null || result == Jason.Defaults.Response.Ok )
+				//{
+				//	var defaultCode = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().DefaultSuccessfulHttpResponseCode;
+
+				//	logger.Debug( "result is '{0}', returning HTTP-Code: {1}.", result == null ? "<null>" : "Ok", defaultCode );
+				//	return Request.CreateResponse( defaultCode );
+				//}
+				//else
+				//{
+				//	var defaultCode = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().DefaultSuccessfulHttpResponseCode;
+				//	logger.Debug( "result is custom type, returning wrapped in {0}.", defaultCode );
+				//	return Request.CreateResponse( defaultCode, result );
+				//}
 			}
 			catch ( Exception critical )
 			{
