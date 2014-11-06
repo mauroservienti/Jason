@@ -269,6 +269,14 @@
       <Project>{d910adca-c2eb-42b5-b79c-46417fb13b38}</Project>
       <Name>SampleJasonCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SampleJasonServer.Desktop\SampleJasonServer.Desktop.csproj">
+      <Project>{6ba5e334-303b-4620-981c-cccfac433c8a}</Project>
+      <Name>SampleJasonServer.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleWorkers\SampleWorkers.csproj">
+      <Project>{23dbc815-fa33-412d-a965-37cd93ee893b}</Project>
+      <Name>SampleWorkers</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
