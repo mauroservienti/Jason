@@ -84,7 +84,7 @@
     <Compile Include="JasonWebAPIEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ComponentModel\IWebApiRequestExecutor.cs" />
-    <Compile Include="Runtime\CommandMapper.cs" />
+    <Compile Include="Runtime\InMemoryCommandMapper.cs" />
     <Compile Include="Runtime\WebApiJobDispatcher.cs" />
     <Compile Include="Runtime\SecurityViolationHandler.cs" />
     <Compile Include="Runtime\WebApiCommandDispatcher.cs" />

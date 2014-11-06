@@ -13,12 +13,13 @@ using Jason.WebAPI.ComponentModel;
 using Jason.WebAPI.Filters;
 using Jason.WebAPI.Runtime;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Jason.WebAPI
 {
 	public class JasonWebAPIEndpoint : IJasonServerEndpoint
 	{
-		CommandMapper mapper = new CommandMapper();
+		InMemoryCommandMapper mapper = new InMemoryCommandMapper();
 
 		public JasonWebAPIEndpoint()
 		{
@@ -28,6 +29,7 @@ namespace Jason.WebAPI
 			this.CorrelationIdHeaderName = "x-jason-correlation-id";
 			this.IsCommandConvention = t => false;
 			this.FindCommandType = (request, lastSegment) => mapper.GetMappedType( lastSegment );
+			this.ConvertToCommand = ( request, lastSegment, type, obj ) => obj.ToObject( type );
 		}
 
 		public TypeNameHandling? TypeNameHandling { get; set; }
@@ -39,6 +41,8 @@ namespace Jason.WebAPI
 		public Func<Type, Boolean> IsCommandConvention { get; set; }
 
 		public Func<HttpRequestMessage, String, Type> FindCommandType { get; set; }
+
+		public Func<HttpRequestMessage, String, Type, JObject, Object> ConvertToCommand { get; set; }
 
 		public String CorrelationIdHeaderName { get; set; }
 

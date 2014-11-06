@@ -8,6 +8,6 @@ namespace SampleTasks
 {
 	public class SampleCommand : Command
 	{
-
+		public String Descrizione { get; set; }
 	}
 }

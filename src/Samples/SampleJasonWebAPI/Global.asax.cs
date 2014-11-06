@@ -51,7 +51,7 @@ namespace SampleJasonWebAPI
 
 			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint()
 			{
-				TypeNameHandling = TypeNameHandling.Objects,
+				//TypeNameHandling = TypeNameHandling.Objects,
 				IsCommandConvention = t =>
 				{
 					return t.Namespace != null && t.Namespace == "SampleTasks";

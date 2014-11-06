@@ -5,4 +5,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible( false )]
 [assembly: AssemblyVersion( "0.5.1.1" )]
 [assembly: AssemblyFileVersion( "0.5.1.1" )]
-[assembly: AssemblyInformationalVersion( "0.5.1.1-Beta" )]
+[assembly: AssemblyInformationalVersion( "0.5.1.1-Beta-2" )]

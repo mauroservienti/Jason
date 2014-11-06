@@ -34,7 +34,8 @@ namespace Jason.WebAPI.Runtime
 			{
 				var last = request.RequestUri.Segments.Last();
 				var type = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().FindCommandType( request, last );
-				command = ( ( JObject )command ).ToObject( type );
+
+				command = this.configuration.GetEndpoint<JasonWebAPIEndpoint>().ConvertToCommand( request, last, type, ( ( JObject )command ) );
 			}
 
 			Object result = null;
