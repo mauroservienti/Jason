@@ -47,6 +47,7 @@ namespace SampleJasonWebAPI
 			var jasonConfig = new DefaultJasonServerConfiguration( Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "bin" ) )
 			{
 				Container = new WindsorJasonContainerProxy( windsor ),
+				TypeFilter = t => !t.Is<MissingHandler>()
 			};
 
 			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint()
@@ -59,7 +60,7 @@ namespace SampleJasonWebAPI
 			} );
 
 			jasonConfig.AddEndpoint( new Jason.Client.JasonInProcessEndpoint() );
-
+			jasonConfig.UsingAsFallbackCommandHandler<MissingHandler>();
 			jasonConfig.Initialize();
 
 			GlobalConfiguration.Configuration.DependencyResolver = new DelegateDependencyResolver()
@@ -83,6 +84,14 @@ namespace SampleJasonWebAPI
 					return new List<Object>();
 				}
 			};
+		}
+	}
+
+	class MissingHandler : AbstractCommandHandler<Object>
+	{
+		protected override object OnExecute( object command )
+		{
+			return null;
 		}
 	}
 

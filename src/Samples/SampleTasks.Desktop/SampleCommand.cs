@@ -10,4 +10,9 @@ namespace SampleTasks
 	{
 		public String Descrizione { get; set; }
 	}
+
+	public class CreateDescription : Command
+	{
+		public String Descrizione { get; set; }
+	}
 }
