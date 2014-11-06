@@ -27,17 +27,25 @@ namespace Jason.WebAPI.Filters
 	{
 		public Action<ExecutingActionArgs, HttpRequestMessage> OnExecutingAction { get; set; }
 
-		public Action<Object> OnCommandActionIntercepted { get; set; }
+		public Func<HttpRequestMessage, Object, HttpResponseMessage> OnCommandActionIntercepted { get; set; }
 
-		public HttpStatusCode DefaultSuccessfulHttpResponseCode { get; set; }
+		//public HttpStatusCode DefaultSuccessfulHttpResponseCode { get; set; }
 		
 		readonly String correlationIdHeader;
+		readonly Func<ComponentModel.IWebApiRequestExecutor> executorFactory;
 
-		public JasonWebApiActionFilter( String correlationIdHeader )
+		public JasonWebApiActionFilter( String correlationIdHeader, Func<ComponentModel.IWebApiRequestExecutor> executorFactory )
 		{
 			this.correlationIdHeader = correlationIdHeader;
+			this.executorFactory = executorFactory;
 			this.OnExecutingAction = ( cid, request ) => { };
-			this.OnCommandActionIntercepted = cmd => { };
+			this.OnCommandActionIntercepted = (request,cmd) => 
+			{
+				var executor = this.executorFactory();
+				var result = executor.Handle( request, cmd );
+
+				return result;
+			};
 		}
 
 		public Task<HttpResponseMessage> ExecuteActionFilterAsync( HttpActionContext actionContext, CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> continuation )
@@ -80,15 +88,18 @@ namespace Jason.WebAPI.Filters
 			return Task.Factory.StartNew( () =>
 			{
 				var command = actionContext.ActionArguments.Values.OfType<Object>().Single();
-				var code = this.DefaultSuccessfulHttpResponseCode;
+				//var code = this.DefaultSuccessfulHttpResponseCode;
+				HttpStatusCode code = HttpStatusCode.NoContent;
 				if ( shouldIntercept.ResponseCode.HasValue )
 				{
 					code = shouldIntercept.ResponseCode.Value;
 				}
 
-				this.OnCommandActionIntercepted( command );
-
-				var response = new HttpResponseMessage( code );
+				var response = this.OnCommandActionIntercepted( actionContext.Request, command );
+				if( shouldIntercept.ResponseCode.HasValue )
+				{
+					response = new HttpResponseMessage( code );
+				}
 
 				return response;
 			} );

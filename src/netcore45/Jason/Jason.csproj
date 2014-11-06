@@ -163,7 +163,7 @@
   <ItemGroup>
     <Reference Include="Radical, Version=0.2.1.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Radical.1.4.2.0-RC\lib\netcore45\Radical.dll</HintPath>
+      <HintPath>..\..\..\packages\Radical.1.5.0.0-alfa\lib\netcore45\Radical.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">

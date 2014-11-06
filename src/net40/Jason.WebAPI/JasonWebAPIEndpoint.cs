@@ -20,44 +20,56 @@ namespace Jason.WebAPI
 	{
 		public JasonWebAPIEndpoint()
 		{
-			this.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
 			this.DefaultSuccessfulHttpResponseCode = HttpStatusCode.OK;
 			this.OnExecutingAction = ( cid, request ) => { };
-			this.OnCommandActionIntercepted = cmd => { };
+			//this.OnCommandActionIntercepted = (request,cmd) => { };
 			this.CorrelationIdHeaderName = "x-jason-correlation-id";
 		}
 
-		public TypeNameHandling TypeNameHandling { get; set; }
+		public TypeNameHandling? TypeNameHandling { get; set; }
 		public HttpStatusCode DefaultSuccessfulHttpResponseCode { get; set; }
 		public Action<ExecutingActionArgs, HttpRequestMessage> OnExecutingAction { get; set; }
 
-		public Action<Object> OnCommandActionIntercepted { get; set; }
+		public Func<HttpRequestMessage, Object, Func<HttpRequestMessage, Object, HttpResponseMessage>, HttpResponseMessage> OnCommandActionIntercepted { get; set; }
 
 		public String CorrelationIdHeaderName { get; set; }
 
 		public void Initialize( IJasonServerConfiguration configuration, IEnumerable<Type> types )
 		{
 			configuration.Container.RegisterAsTransient( new[] { typeof( JasonController ) }, typeof( JasonController ) );
+			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiRequestExecutor ) }, typeof( WebApiRequestExecutor ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiCommandDispatcher ) }, typeof( WebApiCommandDispatcher ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiJobDispatcher ) }, typeof( WebApiJobDispatcher ) );
 
-			GlobalConfiguration.Configuration
-				.Formatters
-				.JsonFormatter
-				.SerializerSettings
-				.TypeNameHandling = this.TypeNameHandling;
-
-			if ( !GlobalConfiguration.Configuration.Filters.OfType<JasonWebApiActionFilter>().Any() )
+			if( this.TypeNameHandling.HasValue )
 			{
-				var filter = new JasonWebApiActionFilter(this.CorrelationIdHeaderName);
+				GlobalConfiguration.Configuration
+					.Formatters
+					.JsonFormatter
+					.SerializerSettings
+					.TypeNameHandling = this.TypeNameHandling.Value;
+			}
+
+			if( !GlobalConfiguration.Configuration.Filters.OfType<JasonWebApiActionFilter>().Any() )
+			{
+				var filter = new JasonWebApiActionFilter( this.CorrelationIdHeaderName, () => configuration.Container.Resolve<IWebApiRequestExecutor>() );
 				filter.OnExecutingAction = ( cid, request ) =>
 				{
 					this.OnExecutingAction( cid, request );
 				};
-				filter.DefaultSuccessfulHttpResponseCode = this.DefaultSuccessfulHttpResponseCode;
-				filter.OnCommandActionIntercepted = cmd => 
+				
+				var original = filter.OnCommandActionIntercepted;
+				filter.OnCommandActionIntercepted = (request, cmd) =>
 				{
-					this.OnCommandActionIntercepted( cmd );
+					if( this.OnCommandActionIntercepted != null ) 
+					{
+						var result = this.OnCommandActionIntercepted( request, cmd, original );
+
+						return result;
+					}
+
+
+					return original( request, cmd );
 				};
 
 				GlobalConfiguration.Configuration.Filters.Add( filter );

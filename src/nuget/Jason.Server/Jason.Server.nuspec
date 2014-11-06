@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>Jason.Server</id>
-    <version>0.4.0.0-RC</version>
+    <version>0.4.0.1-Beta</version>
     <authors>Mauro Servienti</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Jason is an infrastructure framework to easly handle the "Command" part of CQRS on top of server technologies such as WCF and WebAPI</description>
     <dependencies>
       <dependency id="Radical" version="1.4.2.0-RC" />
-      <dependency id="Jason" version="0.4.0.0-RC" />
-      <dependency id="Jason.Tools" version="0.4.0.0-RC" />
+      <dependency id="Jason" version="0.4.0.1-Beta" />
+      <dependency id="Jason.Tools" version="0.4.0.1-Beta" />
       <dependency id="Radical.ServiceModel" version="1.3.0" />
     </dependencies>
   </metadata>

@@ -31,7 +31,11 @@ namespace SampleJasonWebAPI
 		{
 			AreaRegistration.RegisterAllAreas();
 
-			WebApiConfig.Register( GlobalConfiguration.Configuration );
+			GlobalConfiguration.Configure( cfg =>
+			{
+				WebApiConfig.Register( cfg );
+			} );
+
 			FilterConfig.RegisterGlobalFilters( GlobalFilters.Filters );
 			RouteConfig.RegisterRoutes( RouteTable.Routes );
 			BundleConfig.RegisterBundles( BundleTable.Bundles );
