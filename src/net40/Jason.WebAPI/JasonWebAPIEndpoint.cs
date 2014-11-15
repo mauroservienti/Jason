@@ -24,17 +24,15 @@ namespace Jason.WebAPI
 		public JasonWebAPIEndpoint()
 		{
 			this.DefaultSuccessfulHttpResponseCode = HttpStatusCode.OK;
-			this.OnExecutingAction = ( cid, request ) => { };
-			//this.OnCommandActionIntercepted = (request,cmd) => { };
 			this.CorrelationIdHeaderName = "x-jason-correlation-id";
 			this.IsCommandConvention = t => false;
-			this.FindCommandType = (request, lastSegment) => mapper.GetMappedType( lastSegment );
+			this.FindCommandType = ( request, lastSegment ) => mapper.GetMappedType( lastSegment );
 			this.ConvertToCommand = ( request, lastSegment, type, obj ) => obj.ToObject( type );
 		}
 
 		public TypeNameHandling? TypeNameHandling { get; set; }
 		public HttpStatusCode DefaultSuccessfulHttpResponseCode { get; set; }
-		public Action<ExecutingActionArgs, HttpRequestMessage> OnExecutingAction { get; set; }
+		public Action<JasonRequestArgs> OnJasonRequest { get; set; }
 
 		public Func<HttpRequestMessage, Object, Func<HttpRequestMessage, Object, HttpResponseMessage>, HttpResponseMessage> OnCommandActionIntercepted { get; set; }
 
@@ -48,10 +46,20 @@ namespace Jason.WebAPI
 
 		public void Initialize( IJasonServerConfiguration configuration, IEnumerable<Type> types )
 		{
-			configuration.Container.RegisterAsTransient( new[] { typeof( JasonController ) }, typeof( JasonController ) );
+			//configuration.Container.RegisterAsTransient( new[] { typeof( JasonController ) }, typeof( JasonController ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiRequestExecutor ) }, typeof( WebApiRequestExecutor ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiCommandDispatcher ) }, typeof( WebApiCommandDispatcher ) );
 			configuration.Container.RegisterAsTransient( new[] { typeof( IWebApiJobDispatcher ) }, typeof( WebApiJobDispatcher ) );
+
+			Func<HttpRequestMessage, Object, HttpResponseMessage> defaultExecutor = ( request, cmd ) =>
+			{
+				var executor = configuration.Container.Resolve<IWebApiRequestExecutor>();
+				var result = executor.Handle( request, cmd );
+
+				return result;
+			};
+
+			GlobalConfiguration.Configuration.MessageHandlers.Add( new JasonDelegatingHandler( this.CorrelationIdHeaderName, configuration, defaultExecutor ) );
 
 			var allCommands = types.Where( this.IsCommandConvention );
 			foreach( var cmdType in allCommands )
@@ -70,25 +78,7 @@ namespace Jason.WebAPI
 
 			if( !GlobalConfiguration.Configuration.Filters.OfType<JasonWebApiActionFilter>().Any() )
 			{
-				var filter = new JasonWebApiActionFilter( this.CorrelationIdHeaderName, () => configuration.Container.Resolve<IWebApiRequestExecutor>() );
-				filter.OnExecutingAction = ( cid, request ) =>
-				{
-					this.OnExecutingAction( cid, request );
-				};
-				
-				var original = filter.OnCommandActionIntercepted;
-				filter.OnCommandActionIntercepted = (request, cmd) =>
-				{
-					if( this.OnCommandActionIntercepted != null ) 
-					{
-						var result = this.OnCommandActionIntercepted( request, cmd, original );
-
-						return result;
-					}
-
-
-					return original( request, cmd );
-				};
+				var filter = new JasonWebApiActionFilter( this.CorrelationIdHeaderName, configuration, defaultExecutor );
 
 				GlobalConfiguration.Configuration.Filters.Add( filter );
 			}
