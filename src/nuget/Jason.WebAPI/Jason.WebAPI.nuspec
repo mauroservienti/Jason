@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>Jason.WebAPI</id>
-    <version>0.5.1.1-Beta-3</version>
+    <version>0.5.1.1-Beta-4</version>
     <authors>Mauro Servienti</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Jason is an infrastructure framework to easly handle the "Command" part of CQRS on top of server technologies such as WCF and WebAPI</description>
