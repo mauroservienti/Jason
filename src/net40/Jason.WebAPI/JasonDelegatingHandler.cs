@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Jason.WebAPI
 {
@@ -29,15 +30,15 @@ namespace Jason.WebAPI
 			var isJasonExecute = request.Method == HttpMethod.Post
 				&& request.RequestUri.AbsolutePath.IndexOf( "api/jason", StringComparison.OrdinalIgnoreCase ) != -1;
 
-			var args = new JasonRequestArgs();
-			args.IsJasonExecute = isJasonExecute;
-			args.IsCommandInterceptor = false;
-			args.HttpRequest = request;
-
-			Task<HttpResponseMessage> task = null;
-
-			if( args.IsJasonExecute )
+			if( isJasonExecute )
 			{
+				var args = new JasonRequestArgs();
+				args.IsJasonExecute = isJasonExecute;
+				args.IsCommandInterceptor = false;
+				args.HttpRequest = request;
+
+				var scope = GlobalConfiguration.Configuration.DependencyResolver.BeginScope();
+
 				if( request.Headers.Contains( this.correlationIdHeader ) )
 				{
 					args.CorrelationId = request.Headers.GetValues( this.correlationIdHeader ).Single();
@@ -51,22 +52,29 @@ namespace Jason.WebAPI
 
 				var command = Extract( request.Content, typeof( Object ) );
 				var result = this.defaultExecutor( args.HttpRequest, command );
-				task = Task.FromResult( result );
-			}
-			else
-			{
-				task = base.SendAsync( request, cancellationToken );
+				var task = Task.FromResult( result )
+					.ContinueWith( t =>
+					{
+						try
+						{
+							if( !t.IsFaulted && args.AppendCorrelationIdToResponse && !String.IsNullOrWhiteSpace( args.CorrelationId ) )
+							{
+								t.Result.Headers.Add( this.correlationIdHeader, args.CorrelationId );
+							}
+
+							return t;
+						}
+						finally
+						{
+							scope.Dispose();
+						}
+					} )
+					.Unwrap();
+
+				return task;
 			}
 
-			task.ContinueWith( t =>
-			{
-				if( !t.IsFaulted && args.AppendCorrelationIdToResponse && !String.IsNullOrWhiteSpace( args.CorrelationId ) )
-				{
-					t.Result.Headers.Add( this.correlationIdHeader, args.CorrelationId );
-				}
-			} );
-
-			return task;
+			return base.SendAsync( request, cancellationToken );
 		}
 
 		public static Object Extract( HttpContent content, Type commandType )

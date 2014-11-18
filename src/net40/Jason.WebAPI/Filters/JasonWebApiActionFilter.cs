@@ -70,18 +70,38 @@ namespace Jason.WebAPI.Filters
 						response = new HttpResponseMessage( HttpStatusCode.NoContent );
 					}
 
-					return Task.FromResult( response );
+					return Task.FromResult( response )
+						.ContinueWith(t=>
+						{
+							this.TryAppendHeaders( t, args );
+							return t;
+						})
+						.Unwrap();
 				}
 				else 
 				{
 					var response = this.defaultExecutor( args.HttpRequest, command );
-					return Task.FromResult( response );
+					return Task.FromResult( response )
+						.ContinueWith( t =>
+						{
+							this.TryAppendHeaders( t, args );
+							return t;
+						} )
+						.Unwrap();
 				}
 
 			}
 			else 
 			{
 				return continuation();
+			}
+		}
+
+		void TryAppendHeaders( Task<HttpResponseMessage> t, JasonRequestArgs args )
+		{
+			if( !t.IsFaulted && args.AppendCorrelationIdToResponse && !String.IsNullOrWhiteSpace( args.CorrelationId ) )
+			{
+				t.Result.Headers.Add( this.correlationIdHeader, args.CorrelationId );
 			}
 		}
 
