@@ -16,12 +16,14 @@ namespace Jason.WebAPI
 		readonly String correlationIdHeader;
 		readonly IJasonServerConfiguration configuration;
 		readonly Func<HttpRequestMessage, Object, HttpResponseMessage> defaultExecutor;
+		readonly HttpConfiguration httpConfiguration;
 
-		public JasonDelegatingHandler( String correlationIdHeader, IJasonServerConfiguration configuration, Func<HttpRequestMessage, Object, HttpResponseMessage> defaultExecutor )
+		public JasonDelegatingHandler( String correlationIdHeader, IJasonServerConfiguration configuration, Func<HttpRequestMessage, Object, HttpResponseMessage> defaultExecutor, HttpConfiguration httpConfiguration )
 		{
 			this.correlationIdHeader = correlationIdHeader;
 			this.configuration = configuration;
 			this.defaultExecutor = defaultExecutor;
+			this.httpConfiguration = httpConfiguration;
 		}
 
 		protected override Task<HttpResponseMessage> SendAsync( HttpRequestMessage request, System.Threading.CancellationToken cancellationToken )
@@ -37,7 +39,7 @@ namespace Jason.WebAPI
 				args.IsCommandInterceptor = false;
 				args.HttpRequest = request;
 
-				var scope = GlobalConfiguration.Configuration.DependencyResolver.BeginScope();
+				var scope = this.httpConfiguration.DependencyResolver.BeginScope();
 
 				if( request.Headers.Contains( this.correlationIdHeader ) )
 				{
@@ -84,7 +86,13 @@ namespace Jason.WebAPI
 
 			//reset the internal stream position to allow the WebAPI pipeline to read it again.
 			content.ReadAsStreamAsync()
-				.ContinueWith( t => t.Result.Seek( 0, SeekOrigin.Begin ) )
+				.ContinueWith( t =>
+				{
+					if( t.Result.CanSeek )
+					{
+						t.Result.Seek( 0, SeekOrigin.Begin );
+					}
+				} )
 				.Wait();
 
 			return read.Result;
