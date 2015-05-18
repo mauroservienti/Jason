@@ -47,22 +47,27 @@ namespace SampleJasonWebAPI
 			var jasonConfig = new DefaultJasonServerConfiguration( Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "bin" ) )
 			{
 				Container = new WindsorJasonContainerProxy( windsor ),
+				TypeFilter = t => !t.Is<MissingHandler>()
 			};
 
-			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint()
+			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint( GlobalConfiguration.Configuration )
 			{
-				TypeNameHandling = TypeNameHandling.Objects
+				//TypeNameHandling = TypeNameHandling.Objects,
+				IsCommandConvention = t =>
+				{
+					return t.Namespace != null && t.Namespace == "SampleTasks";
+				}
 			} );
 
 			jasonConfig.AddEndpoint( new Jason.Client.JasonInProcessEndpoint() );
-
+			jasonConfig.UsingAsFallbackCommandHandler<MissingHandler>();
 			jasonConfig.Initialize();
 
 			GlobalConfiguration.Configuration.DependencyResolver = new DelegateDependencyResolver()
 			{
 				OnGetService = t =>
 				{
-					if ( windsor.Kernel.HasComponent( t ) )
+					if( windsor.Kernel.HasComponent( t ) )
 					{
 						return windsor.Resolve( t );
 					}
@@ -71,7 +76,7 @@ namespace SampleJasonWebAPI
 				},
 				OnGetServices = t =>
 				{
-					if ( windsor.Kernel.HasComponent( t ) )
+					if( windsor.Kernel.HasComponent( t ) )
 					{
 						return windsor.ResolveAll( t ).OfType<Object>();
 					}
@@ -79,6 +84,14 @@ namespace SampleJasonWebAPI
 					return new List<Object>();
 				}
 			};
+		}
+	}
+
+	class MissingHandler : AbstractCommandHandler<Object>
+	{
+		protected override object OnExecute( object command )
+		{
+			return null;
 		}
 	}
 
@@ -93,7 +106,7 @@ namespace SampleJasonWebAPI
 
 		public object GetService( Type serviceType )
 		{
-			if ( this.container.Kernel.HasComponent( serviceType ) )
+			if( this.container.Kernel.HasComponent( serviceType ) )
 			{
 				return this.container.Resolve( serviceType );
 			}

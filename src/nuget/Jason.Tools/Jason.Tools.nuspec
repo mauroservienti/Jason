@@ -12,6 +12,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\..\build\release\Jason.Tools\lib\" target="lib\" />
+    <file src="..\..\..\build\$configuration$\Jason.Tools\lib\" target="lib\" />
   </files>
 </package>

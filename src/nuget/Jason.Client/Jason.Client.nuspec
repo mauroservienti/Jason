@@ -14,6 +14,6 @@
   </metadata>
 
   <files>
-    <file src="..\..\..\build\release\jason.client\lib\" target="lib\" />
+    <file src="..\..\..\build\$configuration$\jason.client\lib\" target="lib\" />
   </files>
 </package>
