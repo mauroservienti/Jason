@@ -50,7 +50,7 @@ namespace SampleJasonWebAPI
 				TypeFilter = t => !t.Is<MissingHandler>()
 			};
 
-			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint()
+			jasonConfig.AddEndpoint( new Jason.WebAPI.JasonWebAPIEndpoint( GlobalConfiguration.Configuration )
 			{
 				//TypeNameHandling = TypeNameHandling.Objects,
 				IsCommandConvention = t =>

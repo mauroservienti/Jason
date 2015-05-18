@@ -20,14 +20,16 @@ namespace Jason.WebAPI
 	public class JasonWebAPIEndpoint : IJasonServerEndpoint
 	{
 		InMemoryCommandMapper mapper = new InMemoryCommandMapper();
+		readonly HttpConfiguration httpConfiguration;
 
-		public JasonWebAPIEndpoint()
+		public JasonWebAPIEndpoint( HttpConfiguration httpConfiguration )
 		{
 			this.DefaultSuccessfulHttpResponseCode = HttpStatusCode.OK;
 			this.CorrelationIdHeaderName = "x-jason-correlation-id";
 			this.IsCommandConvention = t => false;
 			this.FindCommandType = ( request, lastSegment ) => mapper.GetMappedType( lastSegment );
 			this.ConvertToCommand = ( request, lastSegment, type, obj ) => obj.ToObject( type );
+			this.httpConfiguration = httpConfiguration;
 		}
 
 		public TypeNameHandling? TypeNameHandling { get; set; }
@@ -59,7 +61,7 @@ namespace Jason.WebAPI
 				return result;
 			};
 
-			GlobalConfiguration.Configuration.MessageHandlers.Add( new JasonDelegatingHandler( this.CorrelationIdHeaderName, configuration, defaultExecutor ) );
+			this.httpConfiguration.MessageHandlers.Add( new JasonDelegatingHandler( this.CorrelationIdHeaderName, configuration, defaultExecutor, this.httpConfiguration ) );
 
 			var allCommands = types.Where( this.IsCommandConvention );
 			foreach( var cmdType in allCommands )
@@ -69,18 +71,18 @@ namespace Jason.WebAPI
 
 			if( this.TypeNameHandling.HasValue )
 			{
-				GlobalConfiguration.Configuration
+				this.httpConfiguration
 					.Formatters
 					.JsonFormatter
 					.SerializerSettings
 					.TypeNameHandling = this.TypeNameHandling.Value;
 			}
 
-			if( !GlobalConfiguration.Configuration.Filters.OfType<JasonWebApiActionFilter>().Any() )
+			if( !this.httpConfiguration.Filters.OfType<JasonWebApiActionFilter>().Any() )
 			{
 				var filter = new JasonWebApiActionFilter( this.CorrelationIdHeaderName, configuration, defaultExecutor );
 
-				GlobalConfiguration.Configuration.Filters.Add( filter );
+				this.httpConfiguration.Filters.Add( filter );
 			}
 		}
 
